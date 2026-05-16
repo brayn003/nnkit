@@ -1,3 +1,7 @@
+function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
 class Value {
   data: number;
   gradient: number;
@@ -41,6 +45,19 @@ class Value {
     return out;
   }
 
+  tanh() {
+    const out = new Value(
+      Math.tanh(this.data),
+      // (Math.exp(2 * this.data) - 1) / (Math.exp(2 * this.data) + 1),
+    );
+    out.operands.add(this);
+    out.operator = "tanh";
+    out.calcOperandGradients = () => {
+      this.gradient = 1 - Math.pow(this.data, 2);
+    };
+    return out;
+  }
+
   backward() {
     // arranging the compute graph linerally
     const topo: Array<Value> = [];
@@ -63,6 +80,47 @@ class Value {
     }
   }
 }
+
+// nn components
+class Neuron {
+  weights: Array<Value> = [];
+  bias: Value;
+
+  constructor(noOfInputs: number) {
+    this.bias = new Value(0);
+    for (let i = 0; i < noOfInputs; i += 1) {
+      this.weights.push(new Value(getRandomArbitrary(-1, 1)));
+    }
+  }
+
+  run(inputs: Array<Value>) {
+    if (this.weights.length !== inputs.length) {
+      throw new Error("Weight and Input lengths don't match");
+    }
+
+    let sum = null;
+    for (let i = 0; i < inputs.length; i += 1) {
+      const w = this.weights[i] as Value;
+      const x = inputs[i] as Value;
+      if (sum === null) {
+        sum = w.mul(x);
+      } else {
+        sum = sum.add(w.mul(x));
+      }
+    }
+
+    if (sum === null) {
+      throw new Error("Sum is null after compute");
+    }
+
+    const ro = sum.add(this.bias);
+    const o = ro.tanh();
+
+    return o;
+  }
+}
+
+// examples
 
 function example1() {
   // simple equation
@@ -89,16 +147,19 @@ function example2() {
 
   const x1w1 = x1.mul(w1);
   const x2w2 = x2.mul(w2);
-  const o = x1w1.add(x2w2).add(b);
+  const ro = x1w1.add(x2w2).add(b);
+
+  const o = ro.tanh();
   o.backward();
-  console.log(x1.toString());
-  console.log(x2.toString());
-  console.log(w1.toString());
-  console.log(w2.toString());
-  console.log(b.toString());
-  console.log(x1w1.toString());
-  console.log(x2w2.toString());
-  console.log(o.toString());
+  console.log("x1", x1.toString());
+  console.log("x2", x2.toString());
+  console.log("w1", w1.toString());
+  console.log("w2", w2.toString());
+  console.log("b", b.toString());
+  console.log("x1w1", x1w1.toString());
+  console.log("x2w2", x2w2.toString());
+  console.log("ro", ro.toString());
+  console.log("o", o.toString());
 }
 
 function main() {
