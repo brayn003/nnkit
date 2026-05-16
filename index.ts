@@ -120,6 +120,25 @@ class Neuron {
   }
 }
 
+class Layer {
+  neurons: Array<Neuron> = [];
+
+  constructor(noOfInputs: number, noOfNeurons: number) {
+    for (let i = 0; i < noOfNeurons; i += 1) {
+      this.neurons.push(new Neuron(noOfInputs));
+    }
+  }
+
+  run(inputs: Array<Value>) {
+    const o: Array<Value> = [];
+    for (let i = 0; i < inputs.length; i += 1) {
+      const neuron = this.neurons[i] as Neuron;
+      o.push(neuron.run(inputs));
+    }
+    return o;
+  }
+}
+
 // examples
 
 function example1() {
@@ -167,7 +186,7 @@ function example3() {
   const n = new Neuron(2);
   const xs = [new Value(-1), new Value(4)];
   const o = n.run(xs);
-  console.log(o);
+  console.log(o.toString());
 }
 
 function main() {
