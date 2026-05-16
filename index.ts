@@ -162,9 +162,18 @@ function example2() {
   console.log("o", o.toString());
 }
 
+function example3() {
+  // simple perceptron with neuron
+  const n = new Neuron(2);
+  const xs = [new Value(-1), new Value(4)];
+  const o = n.run(xs);
+  console.log(o);
+}
+
 function main() {
   // example1();
-  example2();
+  // example2();
+  example3();
 }
 
 main();
