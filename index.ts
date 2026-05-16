@@ -64,7 +64,9 @@ class Value {
   }
 }
 
-function main() {
+function example1() {
+  // simple equation
+  // ab + c
   const a = new Value(-1);
   const b = new Value(3);
   const c = new Value(5);
@@ -74,6 +76,34 @@ function main() {
   console.log(b.toString());
   console.log(c.toString());
   console.log(d.toString());
+}
+
+function example2() {
+  // simple scalar perceptron
+  // x1w1 + x2w2 + b
+  const x1 = new Value(-1);
+  const x2 = new Value(4);
+  const w1 = new Value(3);
+  const w2 = new Value(-3);
+  const b = new Value(2);
+
+  const x1w1 = x1.mul(w1);
+  const x2w2 = x2.mul(w2);
+  const o = x1w1.add(x2w2).add(b);
+  o.backward();
+  console.log(x1.toString());
+  console.log(x2.toString());
+  console.log(w1.toString());
+  console.log(w2.toString());
+  console.log(b.toString());
+  console.log(x1w1.toString());
+  console.log(x2w2.toString());
+  console.log(o.toString());
+}
+
+function main() {
+  // example1();
+  example2();
 }
 
 main();
